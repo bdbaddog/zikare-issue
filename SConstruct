@@ -12,7 +12,9 @@ def rebase(file_list, old_directory, new_directory):
     rebased_file_list = []
 
     for file in file_list:
-        rebased_file_list.append(str(file).replace(old_directory, new_directory))
+        rbf = str(file).replace(old_directory, new_directory)
+        rebased_file_list.append(rbf)
+        Depends(str(file).replace(old_directory, new_directory), file)
 
     return rebased_file_list
 
@@ -71,7 +73,7 @@ else: # Fails: attempts to compile before the archive is extracted
     gtest_environment = environment.Clone()
     gtest_environment.Append(CPPPATH=['build/googletest/include', 'build/googletest'])
 
-    VariantDir('obj/linux-amd64/src', 'build/googletest/src', duplicate = 1)
+    VariantDir('obj/linux-amd64/src', 'build/googletest/src', duplicate = 0)
     variantdir_source_files = rebase(
         source_files, 'build/googletest/src/', 'obj/linux-amd64/src/'
     )
