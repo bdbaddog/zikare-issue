@@ -57,6 +57,8 @@ extract_archive = environment.Command(
     target = source_files
 )
 
+print("Extract_archive: %s"%[e.abspath for e in extract_archive])
+
 # ----------------------------------------------------------------------------------------------- #
 # Step 3: Compile the library
 
@@ -67,10 +69,11 @@ if False: # Works: waits for the archive to extract, then compiles
 
 else: # Fails: attempts to compile before the archive is extracted
     gtest_environment = environment.Clone()
-    gtest_environment.Append(CPPPATH=['build/googletest'])
+    gtest_environment.Append(CPPPATH=['build/googletest/include', 'build/googletest'])
 
     gtest_environment.VariantDir('obj/linux-amd64/src', 'build/googletest/src', duplicate = 0)
     variantdir_source_files = rebase(
-        source_files, 'build/googletest/src/', 'obj/linux-amd64/src/'
+        source_files, '#build/googletest/src/', 'obj/linux-amd64/src/'
     )
+    print("rebased:%s"%[str(f) for f in variantdir_source_files])
     gtest_environment.StaticLibrary('bin/gtest', variantdir_source_files)
