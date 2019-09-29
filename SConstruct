@@ -73,7 +73,7 @@ else: # Fails: attempts to compile before the archive is extracted
 
     gtest_environment.VariantDir('obj/linux-amd64/src', 'build/googletest/src', duplicate = 1)
     variantdir_source_files = rebase(
-        source_files, '#build/googletest/src/', 'obj/linux-amd64/src/'
+        source_files, 'build/googletest/src/', 'obj/linux-amd64/src/'
     )
     print("rebased:%s"%[str(f) for f in variantdir_source_files])
     gtest_environment.StaticLibrary('bin/gtest', variantdir_source_files)
