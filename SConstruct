@@ -4,6 +4,9 @@ import sys
 import importlib
 import os
 
+
+VariantDir('obj/linux-amd64/src', 'build/googletest/src', duplicate = 0)
+
 # ----------------------------------------------------------------------------------------------- #
 
 def rebase(file_list, old_directory, new_directory):
@@ -14,7 +17,7 @@ def rebase(file_list, old_directory, new_directory):
     for file in file_list:
         rbf = str(file).replace(old_directory, new_directory)
         rebased_file_list.append(rbf)
-        Depends(str(file).replace(old_directory, new_directory), file)
+        # Depends(str(file).replace(old_directory, new_directory), file)
 
     return rebased_file_list
 
@@ -44,12 +47,12 @@ download_archive = environment.Command(
 
 source_files = [
     'build/googletest/src/gtest.cc',
-    'build/googletest/src/gtest-death-test.cc',
-    'build/googletest/src/gtest-filepath.cc',
-    'build/googletest/src/gtest-port.cc',
-    'build/googletest/src/gtest-printers.cc',
-    'build/googletest/src/gtest-test-part.cc',
-    'build/googletest/src/gtest-typed-test.cc'
+    # 'build/googletest/src/gtest-death-test.cc',
+    # 'build/googletest/src/gtest-filepath.cc',
+    # 'build/googletest/src/gtest-port.cc',
+    # 'build/googletest/src/gtest-printers.cc',
+    # 'build/googletest/src/gtest-test-part.cc',
+    # 'build/googletest/src/gtest-typed-test.cc'
 ]
 
 # Tell SCons how to "produce" the sources & headers (by calling tar)
@@ -59,7 +62,7 @@ extract_archive = environment.Command(
     target = source_files
 )
 
-print("Extract_archive: %s"%[e.abspath for e in extract_archive])
+print("Extract_archive: %s"%[(id(e),e.abspath,e.dir.abspath) for e in extract_archive])
 
 # ----------------------------------------------------------------------------------------------- #
 # Step 3: Compile the library
@@ -70,12 +73,12 @@ if False: # Works: waits for the archive to extract, then compiles
     gtest_environment.StaticLibrary('bin/gtest', source_files)
 
 else: # Fails: attempts to compile before the archive is extracted
-    gtest_environment = environment.Clone()
-    gtest_environment.Append(CPPPATH=['build/googletest/include', 'build/googletest'])
+    # gtest_environment = environment.Clone()
+    # gtest_environment.Append(CPPPATH=['build/googletest/include', 'build/googletest'])
 
-    VariantDir('obj/linux-amd64/src', 'build/googletest/src', duplicate = 0)
     variantdir_source_files = rebase(
         source_files, 'build/googletest/src/', 'obj/linux-amd64/src/'
     )
     print("rebased:%s"%[str(f) for f in variantdir_source_files])
-    gtest_environment.StaticLibrary('bin/gtest', variantdir_source_files)
+    # gtest_environment.StaticLibrary('bin/gtest', variantdir_source_files)
+    environment.StaticLibrary('bin/gtest', variantdir_source_files, CPPPATH=['build/googletest/include', 'build/googletest'])
